@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private UiManager uiManager;
     private int position = 0;
-    private MediaController mediaController;
+    //private MediaController mediaController;
 
 
 
@@ -58,16 +58,15 @@ public class MainActivity extends AppCompatActivity {
      */
     public void setPrepare(Context context, final UiManager uiManager, final ActivityMainBinding binding,  final int position){
         try {
-            binding.videoView.setMediaController(mediaController);
+            //binding.videoView.setMediaController(mediaController);
             binding.videoView.setVideoPath("android.resource://" + context.getPackageName() + "/" + R.raw.bunny);
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 350);
+            /*LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 350);
 
-            binding.videoView.setVideoSize(params.width, params.height);
+            binding.videoView.setVideoSize(params.width, params.height);*/
             binding.videoView.requestFocus();
             binding.videoView.start();
             binding.videoView.setVideoViewListener(mVideoViewListener);
-            mediaController.setAnchorView(binding.videoView);
 
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
@@ -80,6 +79,16 @@ public class MainActivity extends AppCompatActivity {
 
             public void onPrepared(final MediaPlayer mediaPlayer) {
 
+                mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                    @Override
+                    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+
+                        /*mediaController = new MediaController(MainActivity.this, false);
+                        binding.videoView.setMediaController(mediaController);
+                        mediaController.setAnchorView(binding.videoView);*/
+                    }
+                });
+
                 uiManager.setLoadingProgressBarVisibility(View.GONE);
 
                 binding.videoView.seekTo(position);
@@ -90,16 +99,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-                mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
-                    @Override
-                    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-                        if (mediaController == null) {
-                            mediaController = new MediaController(MainActivity.this);
-
-                        }
-                        mediaController.setAnchorView(binding.videoView);
-                    }
-                });
             }
         });
 
