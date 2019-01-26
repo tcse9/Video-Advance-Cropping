@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <data>
+
+        <variable
+            name="uimanager"
+            type="com.taufiq.videoadvancecropping.binders.UiManager" />
+    </data>
+
+
+    <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBgBlack">
+
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/baseline_arrow_back_ios_black_36"
+                android:layout_alignParentLeft="true"
+                android:tint="@color/colorWhite" />
+
+
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="horizontal">
+
+
+                <Button
+                    android:id="@+id/btnCut"
+                    android:layout_width="0dp"
+                    android:layout_height="25dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorButtonBlue"
+                    android:text="Trim"
+                    android:textStyle="bold"
+                    android:background="@color/colorBlack"/>
+
+                <Button
+                    android:id="@+id/btnTrim"
+                    android:layout_width="0dp"
+                    android:layout_height="25dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorWhite"
+                    android:text="@string/cut"
+                    android:textStyle="bold"
+                    android:background="@color/colorButtonBlue"/>
+
+
+
+
+            </LinearLayout>
+
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="@android:color/transparent"
+                android:layout_alignParentRight="true"
+                android:tint="@color/colorWhite"
+                android:src="@drawable/baseline_done_white_36"/>
+
+
+        </RelativeLayout>
+
+
+
+
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="6"
+            android:orientation="horizontal">
+
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+
+                android:background="@color/colorBlack"
+                android:src="@drawable/play"
+                android:tint="@color/colorWhite" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/colorBgButton"
+                android:layout_weight="4"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:textColor="@color/colorWhite"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textSize="18sp"
+                        android:text="Simple"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/margin_5dp"
+                    android:layout_marginBottom="@dimen/margin_5dp"
+                    android:background="@drawable/divider"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/colorButtonBlue"
+                        android:textSize="@dimen/txt_18sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:text="Advance"/>
+
+                </LinearLayout>
+
+
+
+
+            </LinearLayout>
+
+
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorBlack"
+                android:src="@drawable/camera"
+                android:tint="@color/colorWhite" />
+
+
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/divider"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:background="@color/colorBgBlack">
+
+            <ImageView
+                android:id="@+id/y_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:src="@drawable/y_bar"/>
+
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/y_bar"
+                android:layout_margin="@dimen/margin_5dp"
+                android:src="@drawable/start_here_normal" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/y_bar"
+                android:layout_margin="@dimen/margin_5dp"
+                android:src="@drawable/end_here_normal" />
+
+
+
+
+        </RelativeLayout>
+
+
+
+   </LinearLayout>
+</layout>
