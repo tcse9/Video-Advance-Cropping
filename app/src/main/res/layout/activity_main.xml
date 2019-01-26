@@ -15,6 +15,7 @@
     <LinearLayout
        android:layout_width="match_parent"
        android:layout_height="match_parent"
+        android:background="@color/colorBlack"
        android:orientation="vertical">
 
 
@@ -87,7 +88,7 @@
         <VideoView
             android:id="@+id/videoView"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="350dp" />
 
 
         <LinearLayout
@@ -136,7 +137,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginTop="@dimen/margin_5dp"
                     android:layout_marginBottom="@dimen/margin_5dp"
-                    android:background="@drawable/divider"/>
+                    android:background="@color/colorBlack"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -178,7 +179,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@drawable/divider"/>
+            android:background="@color/colorBlack"/>
 
 
         <RelativeLayout
@@ -189,7 +190,7 @@
             <ImageView
                 android:id="@+id/y_bar"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"
                 android:src="@drawable/y_bar"/>
@@ -199,20 +200,52 @@
                 android:layout_width="65dp"
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@+id/y_bar"
-                android:layout_margin="@dimen/margin_5dp"
+                android:layout_marginTop="@dimen/margin_20dp"
                 android:src="@drawable/start_here_normal" />
 
             <ImageView
                 android:layout_width="65dp"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/y_bar"
-                android:layout_margin="@dimen/margin_5dp"
+                android:layout_marginTop="@dimen/margin_20dp"
                 android:src="@drawable/end_here_normal" />
 
 
 
 
+
+
+
         </RelativeLayout>
+
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="120dp"
+                android:scaleType="fitXY"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/vertical_bar"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:scrollbars="horizontal"/>
+
+
+        </RelativeLayout>
+
+
+
+
+
+
+
 
 
 
