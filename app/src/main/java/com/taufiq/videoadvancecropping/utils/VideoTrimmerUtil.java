@@ -77,6 +77,18 @@ public class VideoTrimmerUtil {
         BackgroundExecutor.execute(new BackgroundExecutor.Task("", 0L, "") {
             @Override public void execute() {
                 try {
+
+                    int w = THUMB_WIDTH, h = THUMB_HEIGHT;
+
+                    Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+                    Bitmap bmp = Bitmap.createBitmap(w, h, conf);
+
+                    for(int i=0;i<6;i++){
+                        long interval = (endPosition - startPosition) / (totalThumbsCount - 1);
+                        callback.onSingleCallback(bmp, (int) interval);
+                    }
+
+
                     MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
                     mediaMetadataRetriever.setDataSource(context, videoUri);
                     // Retrieve media data use microsecond
@@ -92,6 +104,14 @@ public class VideoTrimmerUtil {
                         }
                         callback.onSingleCallback(bitmap, (int) interval);
                     }
+
+
+                    for(int i=0;i<6;i++){
+                        long interval2 = (endPosition - startPosition) / (totalThumbsCount - 1);
+                        callback.onSingleCallback(bmp, (int) interval2);
+                    }
+
+
                     mediaMetadataRetriever.release();
                 } catch (final Throwable e) {
                     Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
