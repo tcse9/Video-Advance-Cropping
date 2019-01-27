@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private long mRightProgressPos;
     private long mRedProgressBarPos = 0;
     private int mMaxWidth = VIDEO_FRAMES_WIDTH;
-
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +67,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        binding.recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new VideoTrimmerAdapter(this);
         binding.recyclerView.setAdapter(adapter);
         binding.recyclerView.addOnScrollListener(mOnScrollListener);
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                     setPlayPauseViewIcon(false);
                 }*/
                 //mRedProgressIcon.setVisibility(GONE);
-                seekTo(mLeftProgressPos);
+                //seekTo(mLeftProgressPos);
                 //mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
                 //mRangeSeekBarView.invalidate();
             }
