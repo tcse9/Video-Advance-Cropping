@@ -26,6 +26,8 @@ import com.taufiq.videoadvancecropping.utils.UiThreadExecutor;
 import com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil;
 import com.taufiq.videoadvancecropping.viewhelpers.PaddingItemDecoration;
 
+import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.VIDEO_FRAMES_WIDTH;
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private long mLeftProgressPos;
     private long mRightProgressPos;
     private long mRedProgressBarPos = 0;
+    private int mMaxWidth = VIDEO_FRAMES_WIDTH;
 
 
     @Override
@@ -66,12 +69,14 @@ public class MainActivity extends AppCompatActivity {
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         adapter = new VideoTrimmerAdapter(this);
-        setPrepare(this, uiManager, binding, position);
+        binding.recyclerView.setAdapter(adapter);
         binding.recyclerView.addOnScrollListener(mOnScrollListener);
 
-        binding.recyclerView.addItemDecoration(new PaddingItemDecoration(DeviceUtil.getDeviceWidth()/2));
-    }
 
+
+        setPrepare(this, uiManager, binding, position);
+
+    }
 
     private final RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
         @Override
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
             super.onScrolled(recyclerView, dx, dy);
             isSeeking = false;
             int scrollX = calcScrollXDistance();
+            //达不到滑动的距离
             if (Math.abs(lastScrollX - scrollX) < mScaledTouchSlop) {
                 isOverScaledTouchSlop = false;
                 return;
@@ -97,21 +103,19 @@ public class MainActivity extends AppCompatActivity {
                 scrollPos = (long) (mAverageMsPx * (VideoTrimmerUtil.RECYCLER_VIEW_PADDING + scrollX));
                 //mLeftProgressPos = mRangeSeekBarView.getSelectedMinValue() + scrollPos;
                 //mRightProgressPos = mRangeSeekBarView.getSelectedMaxValue() + scrollPos;
+                //Log.d(TAG, "onScrolled >>>> mLeftProgressPos = " + mLeftProgressPos);
+                //Log.d(TAG, "onScrolled >>>> mRightProgressPos = " + mRightProgressPos);
                 mRedProgressBarPos = mLeftProgressPos;
-               /* if (binding.videoView.isPlaying()) {
-                    binding.videoView.pause();
-                    //setPlayPauseViewIcon(false);
+                /*if (mVideoView.isPlaying()) {
+                    mVideoView.pause();
+                    setPlayPauseViewIcon(false);
                 }*/
                 //mRedProgressIcon.setVisibility(GONE);
-
-                //seekTo(mLeftProgressPos);
-
+                seekTo(mLeftProgressPos);
                 //mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
                 //mRangeSeekBarView.invalidate();
             }
             lastScrollX = scrollX;
-
-            Log.e("*** LAST_SCROLL_X", "is: "+lastScrollX);
         }
     };
 
@@ -209,8 +213,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initSlicer(){
 
-        binding.recyclerView.setAdapter(adapter);
-
         if (mDuration <= VideoTrimmerUtil.MAX_SHOOT_DURATION) {
             mThumbsTotalCount = VideoTrimmerUtil.MAX_COUNT_RANGE;
 
@@ -219,6 +221,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+
+        mDuration = binding.videoView.getDuration();
 
         startShootVideoThumbs(this, mSourceUri, mThumbsTotalCount, 0, mDuration);
     }
