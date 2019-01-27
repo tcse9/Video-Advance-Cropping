@@ -72,8 +72,6 @@ public class MainActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(adapter);
         binding.recyclerView.addOnScrollListener(mOnScrollListener);
 
-
-
         setPrepare(this, uiManager, binding, position);
 
     }
@@ -183,15 +181,17 @@ public class MainActivity extends AppCompatActivity {
 
             public void onPrepared(final MediaPlayer mediaPlayer) {
 
-                mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                /*mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
                     @Override
                     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
 
-                        /*mediaController = new MediaController(MainActivity.this, false);
+                        *//*mediaController = new MediaController(MainActivity.this, false);
                         binding.videoView.setMediaController(mediaController);
-                        mediaController.setAnchorView(binding.videoView);*/
+                        mediaController.setAnchorView(binding.videoView);*//*
                     }
-                });
+                });*/
+
+                mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
 
                 uiManager.setLoadingProgressBarVisibility(View.GONE);
 
@@ -213,6 +213,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void initSlicer(){
 
+        mDuration = binding.videoView.getDuration();
+
+
         if (mDuration <= VideoTrimmerUtil.MAX_SHOOT_DURATION) {
             mThumbsTotalCount = VideoTrimmerUtil.MAX_COUNT_RANGE;
 
@@ -220,9 +223,6 @@ public class MainActivity extends AppCompatActivity {
             mThumbsTotalCount = (int) (mDuration * 1.0f / (VideoTrimmerUtil.MAX_SHOOT_DURATION * 1.0f) * VideoTrimmerUtil.MAX_COUNT_RANGE);
 
         }
-
-
-        mDuration = binding.videoView.getDuration();
 
         startShootVideoThumbs(this, mSourceUri, mThumbsTotalCount, 0, mDuration);
     }
