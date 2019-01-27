@@ -3,17 +3,28 @@ package com.taufiq.videoadvancecropping;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.MediaController;
+import android.view.ViewTreeObserver;
+
+import com.taufiq.videoadvancecropping.adapters.VideoTrimmerAdapter;
 import com.taufiq.videoadvancecropping.binders.UiManager;
 import com.taufiq.videoadvancecropping.databinding.ActivityMainBinding;
 import com.taufiq.videoadvancecropping.listeners.IVideoViewActionListener;
+import com.taufiq.videoadvancecropping.listeners.SingleCallback;
+import com.taufiq.videoadvancecropping.utils.BackgroundExecutor;
+import com.taufiq.videoadvancecropping.utils.DeviceUtil;
+import com.taufiq.videoadvancecropping.utils.UiThreadExecutor;
+import com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil;
+import com.taufiq.videoadvancecropping.viewhelpers.PaddingItemDecoration;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,8 +32,20 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private UiManager uiManager;
     private int position = 0;
-    //private MediaController mediaController;
-
+    private VideoTrimmerAdapter adapter;
+    private Uri mSourceUri;
+    private int mDuration = 0;
+    private int mThumbsTotalCount;
+    private boolean isSeeking;
+    private int lastScrollX;
+    private int mScaledTouchSlop;
+    private boolean isOverScaledTouchSlop;
+    private long scrollPos = 0;
+    private float mAverageMsPx;
+    private float averagePxMs;
+    private long mLeftProgressPos;
+    private long mRightProgressPos;
+    private long mRedProgressBarPos = 0;
 
 
     @Override
@@ -39,26 +62,103 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void init(){
+    private void init() {
 
-
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        adapter = new VideoTrimmerAdapter(this);
         setPrepare(this, uiManager, binding, position);
+        binding.recyclerView.addOnScrollListener(mOnScrollListener);
+
+        binding.recyclerView.addItemDecoration(new PaddingItemDecoration(DeviceUtil.getDeviceWidth()/2));
+    }
 
 
+    private final RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            isSeeking = false;
+            int scrollX = calcScrollXDistance();
+            if (Math.abs(lastScrollX - scrollX) < mScaledTouchSlop) {
+                isOverScaledTouchSlop = false;
+                return;
+            }
+            isOverScaledTouchSlop = true;
+            //初始状态,why ? 因为默认的时候有35dp的空白！
+            if (scrollX == -VideoTrimmerUtil.RECYCLER_VIEW_PADDING) {
+                scrollPos = 0;
+            } else {
+                isSeeking = true;
+                scrollPos = (long) (mAverageMsPx * (VideoTrimmerUtil.RECYCLER_VIEW_PADDING + scrollX));
+                //mLeftProgressPos = mRangeSeekBarView.getSelectedMinValue() + scrollPos;
+                //mRightProgressPos = mRangeSeekBarView.getSelectedMaxValue() + scrollPos;
+                mRedProgressBarPos = mLeftProgressPos;
+               /* if (binding.videoView.isPlaying()) {
+                    binding.videoView.pause();
+                    //setPlayPauseViewIcon(false);
+                }*/
+                //mRedProgressIcon.setVisibility(GONE);
+
+                //seekTo(mLeftProgressPos);
+
+                //mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
+                //mRangeSeekBarView.invalidate();
+            }
+            lastScrollX = scrollX;
+
+            Log.e("*** LAST_SCROLL_X", "is: "+lastScrollX);
+        }
+    };
+
+    private int calcScrollXDistance() {
+        LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recyclerView.getLayoutManager();
+        int position = layoutManager.findFirstVisibleItemPosition();
+        View firstVisibleChildView = layoutManager.findViewByPosition(position);
+        int itemWidth = firstVisibleChildView.getWidth();
+        return (position) * itemWidth - firstVisibleChildView.getLeft();
+    }
+
+    private void seekTo(long msec) {
+        binding.videoView.seekTo((int) msec);
+    }
+
+
+    private void startShootVideoThumbs(final Context context, final Uri videoUri, int totalThumbsCount, long startPosition, long endPosition) {
+        VideoTrimmerUtil.shootVideoThumbInBackground(context, videoUri, totalThumbsCount, startPosition, endPosition,
+                new SingleCallback<Bitmap, Integer>() {
+                    @Override
+                    public void onSingleCallback(final Bitmap bitmap, final Integer interval) {
+                        if (bitmap != null) {
+                            UiThreadExecutor.runTask("", new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.addBitmaps(bitmap);
+                                }
+                            }, 0L);
+                        }
+                    }
+                });
     }
 
 
     /**
      * Setup the whole {@link android.widget.VideoView} preparation and loading process
+     *
      * @param context
      * @param uiManager
      * @param binding
      * @param position
      * @return
      */
-    public void setPrepare(Context context, final UiManager uiManager, final ActivityMainBinding binding,  final int position){
+    public void setPrepare(Context context, final UiManager uiManager, final ActivityMainBinding binding, final int position) {
         try {
             //binding.videoView.setMediaController(mediaController);
+            mSourceUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.bunny);
             binding.videoView.setVideoPath("android.resource://" + context.getPackageName() + "/" + R.raw.bunny);
 
             /*LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 350);
@@ -98,10 +198,29 @@ public class MainActivity extends AppCompatActivity {
                     binding.videoView.pause();
                 }
 
+                initSlicer();
 
             }
         });
 
+    }
+
+
+
+    private void initSlicer(){
+
+        binding.recyclerView.setAdapter(adapter);
+
+        if (mDuration <= VideoTrimmerUtil.MAX_SHOOT_DURATION) {
+            mThumbsTotalCount = VideoTrimmerUtil.MAX_COUNT_RANGE;
+
+        } else {
+            mThumbsTotalCount = (int) (mDuration * 1.0f / (VideoTrimmerUtil.MAX_SHOOT_DURATION * 1.0f) * VideoTrimmerUtil.MAX_COUNT_RANGE);
+
+        }
+
+
+        startShootVideoThumbs(this, mSourceUri, mThumbsTotalCount, 0, mDuration);
     }
 
     /**
