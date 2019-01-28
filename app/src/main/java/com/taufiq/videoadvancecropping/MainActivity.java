@@ -26,7 +26,10 @@ import com.taufiq.videoadvancecropping.utils.UiThreadExecutor;
 import com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil;
 import com.taufiq.videoadvancecropping.viewhelpers.PaddingItemDecoration;
 
+import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.MAX_SHOOT_DURATION;
+import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.THUMB_WIDTH;
 import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.VIDEO_FRAMES_WIDTH;
+import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.VIDEO_MAX_TIME;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,15 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private int mThumbsTotalCount;
     private boolean isSeeking;
     private int lastScrollX;
-    private int mScaledTouchSlop;
-    private boolean isOverScaledTouchSlop;
-    private long scrollPos = 0;
-    private float mAverageMsPx;
-    private float averagePxMs;
-    private long mLeftProgressPos;
-    private long mRightProgressPos;
-    private long mRedProgressBarPos = 0;
-    private int mMaxWidth = VIDEO_FRAMES_WIDTH;
     private LinearLayoutManager linearLayoutManager;
 
     @Override
@@ -88,33 +82,19 @@ public class MainActivity extends AppCompatActivity {
             super.onScrolled(recyclerView, dx, dy);
             isSeeking = false;
             int scrollX = calcScrollXDistance();
-            //达不到滑动的距离
-            if (Math.abs(lastScrollX - scrollX) < mScaledTouchSlop) {
-                isOverScaledTouchSlop = false;
-                return;
-            }
-            isOverScaledTouchSlop = true;
-            //初始状态,why ? 因为默认的时候有35dp的空白！
-            if (scrollX == -VideoTrimmerUtil.RECYCLER_VIEW_PADDING) {
-                scrollPos = 0;
-            } else {
-                isSeeking = true;
-                scrollPos = (long) (mAverageMsPx * (VideoTrimmerUtil.RECYCLER_VIEW_PADDING + scrollX));
-                //mLeftProgressPos = mRangeSeekBarView.getSelectedMinValue() + scrollPos;
-                //mRightProgressPos = mRangeSeekBarView.getSelectedMaxValue() + scrollPos;
-                //Log.d(TAG, "onScrolled >>>> mLeftProgressPos = " + mLeftProgressPos);
-                //Log.d(TAG, "onScrolled >>>> mRightProgressPos = " + mRightProgressPos);
-                mRedProgressBarPos = mLeftProgressPos;
-                /*if (mVideoView.isPlaying()) {
-                    mVideoView.pause();
-                    setPlayPauseViewIcon(false);
-                }*/
-                //mRedProgressIcon.setVisibility(GONE);
-                //seekTo(mLeftProgressPos);
-                //mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
-                //mRangeSeekBarView.invalidate();
-            }
+
             lastScrollX = scrollX;
+
+            Log.e("SCRL_X", "is: "+lastScrollX);
+            Log.e("DURATION", "is: "+mDuration);
+            Log.e("", ""+MAX_SHOOT_DURATION);
+            Log.e("SEEK_POS_CUR", "is: "+calcRelativeSeekPosition());
+            Log.e("FRAME_RATE", "is: "+lastScrollX/THUMB_WIDTH);
+            Log.e("DURATION", "----------------------------------------");
+
+
+            seekTo(calcRelativeSeekPosition());
+
         }
     };
 
@@ -124,6 +104,11 @@ public class MainActivity extends AppCompatActivity {
         View firstVisibleChildView = layoutManager.findViewByPosition(position);
         int itemWidth = firstVisibleChildView.getWidth();
         return (position) * itemWidth - firstVisibleChildView.getLeft();
+    }
+
+
+    private long calcRelativeSeekPosition(){
+        return (long)(lastScrollX/THUMB_WIDTH) * 1000L;
     }
 
     private void seekTo(long msec) {
@@ -146,6 +131,14 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+
+        binding.btnStartLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.setStartLeftBarClicked(true);
+            }
+        });
     }
 
 
@@ -182,16 +175,6 @@ public class MainActivity extends AppCompatActivity {
 
             public void onPrepared(final MediaPlayer mediaPlayer) {
 
-                /*mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
-                    @Override
-                    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-
-                        *//*mediaController = new MediaController(MainActivity.this, false);
-                        binding.videoView.setMediaController(mediaController);
-                        mediaController.setAnchorView(binding.videoView);*//*
-                    }
-                });*/
-
                 mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
 
                 uiManager.setLoadingProgressBarVisibility(View.GONE);
@@ -217,11 +200,11 @@ public class MainActivity extends AppCompatActivity {
         mDuration = binding.videoView.getDuration();
 
 
-        if (mDuration <= VideoTrimmerUtil.MAX_SHOOT_DURATION) {
+        if (mDuration <= MAX_SHOOT_DURATION) {
             mThumbsTotalCount = VideoTrimmerUtil.MAX_COUNT_RANGE;
 
         } else {
-            mThumbsTotalCount = (int) (mDuration * 1.0f / (VideoTrimmerUtil.MAX_SHOOT_DURATION * 1.0f) * VideoTrimmerUtil.MAX_COUNT_RANGE);
+            mThumbsTotalCount = (int) (mDuration * 1.0f / (MAX_SHOOT_DURATION * 1.0f) * VideoTrimmerUtil.MAX_COUNT_RANGE);
 
         }
 

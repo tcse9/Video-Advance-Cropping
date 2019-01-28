@@ -196,6 +196,7 @@
 
 
                 <ImageView
+                    android:id="@+id/btnStartLeft"
                     android:layout_width="65dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_20dp"
@@ -203,6 +204,7 @@
                     android:src="@drawable/start_here_normal" />
 
                 <ImageView
+                    android:id="@+id/btnEndRight"
                     android:layout_width="65dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_20dp"
@@ -216,6 +218,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerView"

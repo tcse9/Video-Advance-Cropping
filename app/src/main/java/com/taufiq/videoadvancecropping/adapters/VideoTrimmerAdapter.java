@@ -20,6 +20,8 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     private List<Bitmap> mBitmaps = new ArrayList<>();
     private LayoutInflater mInflater;
     private Context context;
+    private boolean isRightBarClicked = false;
+    private boolean isLeftBarClicked = false;
 
     public VideoTrimmerAdapter(Context context) {
         this.context = context;
@@ -33,8 +35,27 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         ((TrimmerViewHolder) holder).thumbImageView.setImageBitmap(mBitmaps.get(position));
+       /* if(isRightBarClicked){
+            ((TrimmerViewHolder) holder).imageBarRight.setVisibility(View.VISIBLE);
+        }
+
+        if(isLeftBarClicked){
+            ((TrimmerViewHolder) holder).imageBarRight.setVisibility(View.VISIBLE);
+        }*/
+
+    }
+
+
+    public void setStartRightBarClicked(boolean isRightBarClicked){
+        this.isRightBarClicked = isRightBarClicked;
+        this.notifyDataSetChanged();
+    }
+
+    public void setStartLeftBarClicked(boolean isLeftBarClicked){
+        this.isLeftBarClicked = isLeftBarClicked;
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -48,11 +69,13 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     }
 
     private final class TrimmerViewHolder extends RecyclerView.ViewHolder {
-        ImageView thumbImageView;
+        ImageView thumbImageView, imageBarRight, imageBarLeft;
 
         TrimmerViewHolder(View itemView) {
             super(itemView);
             thumbImageView = itemView.findViewById(R.id.thumb);
+            imageBarRight = itemView.findViewById(R.id.imageBarRight);
+            imageBarLeft = itemView.findViewById(R.id.imageBarLeft);
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) thumbImageView.getLayoutParams();
             layoutParams.width = VideoTrimmerUtil.VIDEO_FRAMES_WIDTH / VideoTrimmerUtil.MAX_COUNT_RANGE;
             thumbImageView.setLayoutParams(layoutParams);
