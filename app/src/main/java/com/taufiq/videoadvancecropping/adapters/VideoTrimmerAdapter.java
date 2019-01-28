@@ -42,34 +42,11 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         ((TrimmerViewHolder) holder).thumbImageView.setImageBitmap(mBitmaps.get(position));
 
-       /* if(isRightBarClicked && position == positionStart){
-            ((TrimmerViewHolder) holder).imageBarRight.setVisibility(View.VISIBLE);
-        }*/
-
-       /*if(isRightBarClicked  && position == positionStart){
-            ((TrimmerViewHolder) holder).imageBarRight.setVisibility(View.VISIBLE);
-        }*/
-
-
-
     }
 
     public void addBar(int position, Bitmap bitmap){
         this.mBitmaps.add(position, bitmap);
         notifyItemInserted(position);
-    }
-
-
-    public void setStartRightBarClicked(int positionStart, boolean isRightBarClicked){
-        this.positionStart = positionStart;
-        this.isRightBarClicked = isRightBarClicked;
-        this.notifyDataSetChanged();
-    }
-
-    public void setStartLeftBarClicked(int positionEnd, boolean isLeftBarClicked){
-        this.positionEnd = positionEnd;
-        this.isLeftBarClicked = isLeftBarClicked;
-        this.notifyDataSetChanged();
     }
 
     @Override
