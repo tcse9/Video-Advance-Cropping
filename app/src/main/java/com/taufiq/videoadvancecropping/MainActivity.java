@@ -4,6 +4,7 @@ package com.taufiq.videoadvancecropping;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isSeeking;
     private int lastScrollX;
     private LinearLayoutManager linearLayoutManager;
+    private int currentFrame = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,13 +87,14 @@ public class MainActivity extends AppCompatActivity {
 
             lastScrollX = scrollX;
 
-            Log.e("SCRL_X", "is: "+lastScrollX);
+           /* Log.e("SCRL_X", "is: "+lastScrollX);
             Log.e("DURATION", "is: "+mDuration);
             Log.e("", ""+MAX_SHOOT_DURATION);
             Log.e("SEEK_POS_CUR", "is: "+calcRelativeSeekPosition());
             Log.e("FRAME_RATE", "is: "+lastScrollX/THUMB_WIDTH);
-            Log.e("DURATION", "----------------------------------------");
+            Log.e("DURATION", "----------------------------------------");*/
 
+            currentFrame = lastScrollX/THUMB_WIDTH;
 
             seekTo(calcRelativeSeekPosition());
 
@@ -108,11 +111,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     private long calcRelativeSeekPosition(){
-        return (long)(lastScrollX/THUMB_WIDTH) * 1000L;
+        return (long)(currentFrame) * 1000L;
     }
 
     private void seekTo(long msec) {
         binding.videoView.seekTo((int) msec);
+    }
+
+    private Bitmap converBarIcon(int iconReource){
+        return BitmapFactory.decodeResource(getResources(), iconReource);
     }
 
 
@@ -136,7 +143,18 @@ public class MainActivity extends AppCompatActivity {
         binding.btnStartLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                adapter.setStartLeftBarClicked(true);
+                //adapter.setStartRightBarClicked(lastScrollX/THUMB_WIDTH, true);
+                adapter.addBar(currentFrame + 6, converBarIcon(R.drawable.lower_image_bar_right));
+                Log.e("FRAME_RATE_START", "is: "+currentFrame);
+            }
+        });
+
+        binding.btnEndRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //adapter.setStartRightBarClicked(lastScrollX/THUMB_WIDTH, true);
+                adapter.addBar(currentFrame + 7, converBarIcon(R.drawable.lower_image_bar_left));
+                Log.e("FRAME_RATE_END", "is: "+currentFrame);
             }
         });
     }

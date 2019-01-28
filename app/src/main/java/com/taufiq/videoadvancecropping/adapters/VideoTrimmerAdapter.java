@@ -2,8 +2,10 @@ package com.taufiq.videoadvancecropping.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,8 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     private Context context;
     private boolean isRightBarClicked = false;
     private boolean isLeftBarClicked = false;
+    private int positionStart = 0;
+    private int positionEnd = 0;
 
     public VideoTrimmerAdapter(Context context) {
         this.context = context;
@@ -37,23 +41,33 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         ((TrimmerViewHolder) holder).thumbImageView.setImageBitmap(mBitmaps.get(position));
-       /* if(isRightBarClicked){
-            ((TrimmerViewHolder) holder).imageBarRight.setVisibility(View.VISIBLE);
-        }
 
-        if(isLeftBarClicked){
+       /* if(isRightBarClicked && position == positionStart){
             ((TrimmerViewHolder) holder).imageBarRight.setVisibility(View.VISIBLE);
         }*/
 
+       /*if(isRightBarClicked  && position == positionStart){
+            ((TrimmerViewHolder) holder).imageBarRight.setVisibility(View.VISIBLE);
+        }*/
+
+
+
+    }
+
+    public void addBar(int position, Bitmap bitmap){
+        this.mBitmaps.add(position, bitmap);
+        notifyItemInserted(position);
     }
 
 
-    public void setStartRightBarClicked(boolean isRightBarClicked){
+    public void setStartRightBarClicked(int positionStart, boolean isRightBarClicked){
+        this.positionStart = positionStart;
         this.isRightBarClicked = isRightBarClicked;
         this.notifyDataSetChanged();
     }
 
-    public void setStartLeftBarClicked(boolean isLeftBarClicked){
+    public void setStartLeftBarClicked(int positionEnd, boolean isLeftBarClicked){
+        this.positionEnd = positionEnd;
         this.isLeftBarClicked = isLeftBarClicked;
         this.notifyDataSetChanged();
     }

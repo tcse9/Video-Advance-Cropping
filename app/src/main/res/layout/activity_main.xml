@@ -220,12 +220,48 @@
                 android:layout_height="wrap_content">
 
 
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerView"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
-                    android:scrollbars="horizontal" />
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:scrollbars="horizontal" />
+
+                    <!--<RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/margin_20dp">
+
+                        <ImageView
+                            android:id="@+id/imageBarRight"
+                            android:layout_width="20dp"
+                            android:layout_height="60dp"
+                            android:paddingRight="10dp"
+                            android:scaleType="fitXY"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/lower_image_bar_right" />
+
+                        <ImageView
+                            android:id="@+id/imageBarLeft"
+                            android:layout_width="20dp"
+                            android:layout_height="60dp"
+                            android:paddingLeft="10dp"
+                            android:scaleType="fitXY"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/lower_image_bar_left" />
+
+                    </RelativeLayout>-->
+
+
+
+
+                </FrameLayout>
+
+
 
                 <ImageView
                     android:id="@+id/verticalBar"
