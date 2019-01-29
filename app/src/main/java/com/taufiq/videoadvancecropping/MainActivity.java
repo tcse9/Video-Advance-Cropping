@@ -38,6 +38,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.MAX_SHOOT_DURATION;
@@ -60,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQ_CODE_PERMISSIONS = 110;
     private ProgressDialog mProgressDialog;
     private static final String COMPRESSED_VIDEO_FILE_NAME = "compress.mp4";
+    private Timer timer;
+    private String cutLeftPortion;
+    private String cutRightPortion;
+    private String trimPortion;
+    private List<String> videoStripList;
 
 
     private int currentFrame = 0;
@@ -141,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
         topLayoutButtonColorManagement();
 
-
+        videoStripList = new ArrayList<>();
     }
 
 
@@ -301,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
         binding.imgViewSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                VideoTrimmerUtil.trim(MainActivity.this,
+                /*VideoTrimmerUtil.trim(MainActivity.this,
                         createFileFromInputStream(ins).getAbsolutePath(),
                         getOutputFilePath(),
                         videoCutStartTime * 1000L,
@@ -322,14 +330,116 @@ public class MainActivity extends AppCompatActivity {
                             public void onCancel() {
 
                             }
+                        });*/
+
+                cutVideo();
+            }
+        });
+
+
+    }
+
+    private void cutVideo(){
+        final InputStream ins = getResources().openRawResource(R.raw.bunny);
+
+
+
+        binding.imgViewSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                VideoTrimmerUtil.trim(MainActivity.this,
+                        createFileFromInputStream(ins).getAbsolutePath(),
+                        getOutputFilePath(),
+                        0,
+                        videoCutStartTime * 1000L,
+                        new VideoTrimListener() {
+                            @Override
+                            public void onStartTrim() {
+                                buildDialog("Compressing...").show();
+                            }
+
+                            @Override
+                            public void onFinishTrim(String url) {
+
+                                trimPortion = url;
+                                videoStripList.add(url);
+                                cutPortionMaintenance(trimPortion);
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
                         });
+
+
+
+
             }
         });
 
 
 
 
+
     }
+
+
+    private void cutPortionMaintenance(final String url){
+        final InputStream ins = getResources().openRawResource(R.raw.bunny);
+        VideoTrimmerUtil.trim(MainActivity.this,
+                createFileFromInputStream(ins).getAbsolutePath(),
+                getOutputFilePath(),
+                videoCutEndTime,
+                mDuration,
+                new VideoTrimListener() {
+                    @Override
+                    public void onStartTrim() {
+                        //buildDialog("Compressing...").show();
+                    }
+
+                    @Override
+                    public void onFinishTrim(String url) {
+
+                        trimPortion = url;
+                        videoStripList.add(url);
+                        merge();
+
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
+    }
+
+
+    private void merge(){
+        final InputStream ins = getResources().openRawResource(R.raw.bunny);
+        VideoTrimmerUtil.cut(MainActivity.this, createFileFromInputStream(ins).getAbsolutePath(), videoStripList, new VideoTrimListener() {
+            @Override
+            public void onStartTrim() {
+
+            }
+
+            @Override
+            public void onFinishTrim(String url) {
+                mProgressDialog.dismiss();
+                Toast.makeText(MainActivity.this, getString(R.string.save_success), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+    }
+
+
+
+
 
     private String getDurationString(int seconds) {
 
@@ -453,15 +563,22 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void showTimer(final MediaPlayer mp){
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-               runOnUiThread(new Runnable() {
-                   @Override
-                   public void run() {
-                       binding.txtRunningTime.setText(getDurationString(mp.getCurrentPosition()/1000));
-                   }
-               });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(timer != null)
+                            try {
+                                binding.txtRunningTime.setText(getDurationString(mp.getCurrentPosition() / 1000));
+                            } catch (Exception e){
+                                timer.cancel();
+                                timer = null;
+                            }
+                    }
+                });
             }
         }, 0, 1000);
     }
@@ -515,5 +632,24 @@ public class MainActivity extends AppCompatActivity {
         }
         mProgressDialog.setMessage(msg);
         return mProgressDialog;
+    }
+
+
+    @Override
+    protected void onResume() {
+        binding.videoView.resume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        binding.videoView.suspend();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        binding.videoView.stopPlayback();
+        super.onDestroy();
     }
 }

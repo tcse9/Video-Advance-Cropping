@@ -4,13 +4,20 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.taufiq.videoadvancecropping.listeners.SingleCallback;
 import com.taufiq.videoadvancecropping.listeners.VideoTrimListener;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import nl.bravobit.ffmpeg.ExecuteBinaryResponseHandler;
@@ -75,6 +82,60 @@ public class VideoTrimmerUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void cut(Context context, String outputFile, List<String> fileList, final VideoTrimListener callback) {
+
+
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "ffmpeg_videos";
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        final File inputfile = new File(path, "input.txt");
+
+        try {
+            inputfile.createNewFile();
+            FileOutputStream out = new FileOutputStream(inputfile);
+            for (String string : fileList) {
+                out.write(("file " + "'" + string + "'").getBytes());
+                out.write("\n".getBytes());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String[] command = new String[] {
+                "-f",
+                "concat",
+                "-safe",
+                "0",
+                "-i",
+                inputfile.getAbsolutePath(),
+                "-c",
+                "copy",
+                outputFile
+        };
+
+
+        try {
+            final String tempOutFile = outputFile;
+            FFmpeg.getInstance(context).execute(command, new ExecuteBinaryResponseHandler() {
+
+                @Override public void onSuccess(String s) {
+                    callback.onFinishTrim(tempOutFile);
+                }
+
+                @Override public void onStart() {
+                    callback.onStartTrim();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 
