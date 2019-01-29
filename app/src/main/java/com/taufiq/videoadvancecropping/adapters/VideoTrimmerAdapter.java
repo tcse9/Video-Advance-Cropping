@@ -49,6 +49,11 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
         notifyItemInserted(position);
     }
 
+    public void removeBar(int position){
+        this.mBitmaps.remove(position);
+        notifyItemRemoved(position);
+    }
+
     @Override
     public int getItemCount() {
         return mBitmaps.size();

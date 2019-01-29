@@ -46,6 +46,12 @@ public class MainActivity extends AppCompatActivity {
     private int lastScrollX;
     private LinearLayoutManager linearLayoutManager;
     private int currentFrame = 0;
+    private boolean isStartPressedOnce = false;
+    private boolean isEndPressedOnce = false;
+    private long videoCutStartTime = 0;
+    private long videoCutEndTime = 0;
+    private int startThumbPos = 0;
+    private int endThumbPos = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,8 +149,21 @@ public class MainActivity extends AppCompatActivity {
         binding.btnStartLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //adapter.setStartRightBarClicked(lastScrollX/THUMB_WIDTH, true);
-                adapter.addBar(currentFrame + 6, converBarIcon(R.drawable.lower_image_bar_right));
+
+                isStartPressedOnce = !isStartPressedOnce;
+                if(isStartPressedOnce){
+                    binding.btnStartLeft.setImageResource(R.drawable.start_here_tap);
+                    startThumbPos = currentFrame + 6;
+                    adapter.addBar(currentFrame + 6, converBarIcon(R.drawable.lower_image_bar_right));
+                }else {
+                    binding.btnStartLeft.setImageResource(R.drawable.start_here_normal);
+                    adapter.removeBar(startThumbPos);
+                    //adapter.addBar(currentFrame + 6, converBarIcon(R.drawable.lower_image_bar_right));
+                }
+
+
+
+
                 Log.e("FRAME_RATE_START", "is: "+currentFrame);
             }
         });
@@ -152,8 +171,19 @@ public class MainActivity extends AppCompatActivity {
         binding.btnEndRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //adapter.setStartRightBarClicked(lastScrollX/THUMB_WIDTH, true);
-                adapter.addBar(currentFrame + 7, converBarIcon(R.drawable.lower_image_bar_left));
+                isEndPressedOnce = !isEndPressedOnce;
+                if(isEndPressedOnce){
+                    binding.btnEndRight.setImageResource(R.drawable.end_here_tap);
+                    endThumbPos = currentFrame + 7;
+                    adapter.addBar(currentFrame + 7, converBarIcon(R.drawable.lower_image_bar_left));
+                }else {
+                    binding.btnEndRight.setImageResource(R.drawable.end_here_normal);
+                    adapter.removeBar(endThumbPos);
+                    //adapter.addBar(currentFrame + 7, converBarIcon(R.drawable.lower_image_bar_left));
+                }
+
+
+
                 Log.e("FRAME_RATE_END", "is: "+currentFrame);
             }
         });
