@@ -8,6 +8,7 @@
     <color name="colorWhite">#ffffff</color>
     <color name="colorBlack">#000000</color>
     <color name="colorButtonBlue">#06c293</color>
+    <color name="buttonTextToggleColor">#06c293</color>
     <color name="colorBgButton">#29262a</color>
     <color name="colorRed">#ff0000</color>
 </resources>

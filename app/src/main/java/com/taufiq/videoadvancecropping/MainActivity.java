@@ -13,6 +13,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -141,8 +142,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        topLayoutButtonColorManagement();
 
 
+    }
+
+
+    private void topLayoutButtonColorManagement() {
+
+        binding.btnTrim.setTextColor(ContextCompat.getColor(this, R.color.colorWhite));
+        binding.btnTrim.setBackgroundColor(ContextCompat.getColor(this, R.color.buttonTextToggleColor));
+
+        binding.btnCut.setTextColor(ContextCompat.getColor(this, R.color.buttonTextToggleColor));
+        binding.btnCut.setBackgroundColor(ContextCompat.getColor(this, R.color.colorBlack));
+
+        binding.btnTrim.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                binding.btnTrim.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorWhite));
+                binding.btnTrim.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.buttonTextToggleColor));
+
+                binding.btnCut.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.buttonTextToggleColor));
+                binding.btnCut.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorBlack));
+            }
+        });
+
+        binding.btnCut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                binding.btnCut.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorWhite));
+                binding.btnCut.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.buttonTextToggleColor));
+
+                binding.btnTrim.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.buttonTextToggleColor));
+                binding.btnTrim.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorBlack));
+            }
+        });
 
     }
 
