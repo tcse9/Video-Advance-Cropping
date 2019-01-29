@@ -107,6 +107,10 @@ public class VideoTrimmerUtil {
             e.printStackTrace();
         }
 
+        final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        final String outputName = "trimmedVideo_" + timeStamp + ".mp4";
+        outputFile = outputFile + "/" + outputName;
+
         String[] command = new String[] {
                 "-f",
                 "concat",
@@ -120,6 +124,7 @@ public class VideoTrimmerUtil {
         };
 
 
+
         try {
             final String tempOutFile = outputFile;
             FFmpeg.getInstance(context).execute(command, new ExecuteBinaryResponseHandler() {
@@ -130,6 +135,16 @@ public class VideoTrimmerUtil {
 
                 @Override public void onStart() {
                     callback.onStartTrim();
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    super.onFailure(message);
+                }
+
+                @Override
+                public void onFinish() {
+                    callback.onFinishTrim(tempOutFile);
                 }
             });
         } catch (Exception e) {

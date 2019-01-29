@@ -47,7 +47,7 @@
 
 
                 <Button
-                    android:id="@+id/btnCut"
+                    android:id="@+id/btnTrim"
                     android:layout_width="0dp"
                     android:layout_height="25dp"
                     android:layout_weight="1"
@@ -57,7 +57,7 @@
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/btnTrim"
+                    android:id="@+id/btnCut"
                     android:layout_width="0dp"
                     android:layout_height="25dp"
                     android:layout_weight="1"

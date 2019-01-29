@@ -33,6 +33,7 @@ import com.taufiq.videoadvancecropping.listeners.VideoTrimListener;
 import com.taufiq.videoadvancecropping.utils.StorageUtil;
 import com.taufiq.videoadvancecropping.utils.UiThreadExecutor;
 import com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,6 +44,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.MAX_SHOOT_DURATION;
 import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.THUMB_WIDTH;
 
@@ -77,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
     private long videoCutEndTime = 0;
     private int startThumbPos = 0;
     private int endThumbPos = 0;
+    private boolean isTreamStateOn = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,13 +127,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
     private void init() {
-
-
 
 
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -161,6 +159,8 @@ public class MainActivity extends AppCompatActivity {
         binding.btnCut.setTextColor(ContextCompat.getColor(this, R.color.buttonTextToggleColor));
         binding.btnCut.setBackgroundColor(ContextCompat.getColor(this, R.color.colorBlack));
 
+        binding.btnTrim.setTag("TREAM_CLICKED");
+
         binding.btnTrim.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -170,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
 
                 binding.btnCut.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.buttonTextToggleColor));
                 binding.btnCut.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorBlack));
+
+                binding.btnTrim.setTag("TREAM_CLICKED");
             }
         });
 
@@ -182,6 +184,8 @@ public class MainActivity extends AppCompatActivity {
 
                 binding.btnTrim.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.buttonTextToggleColor));
                 binding.btnTrim.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorBlack));
+
+                binding.btnTrim.setTag("CUT_CLICKED");
             }
         });
 
@@ -208,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("FRAME_RATE", "is: "+lastScrollX/THUMB_WIDTH);
             Log.e("DURATION", "----------------------------------------");*/
 
-            currentFrame = lastScrollX/THUMB_WIDTH;
+            currentFrame = lastScrollX / THUMB_WIDTH;
 
             seekTo(calcRelativeSeekPosition());
 
@@ -224,15 +228,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private long calcRelativeSeekPosition(){
-        return (long)(currentFrame) * 1000L;
+    private long calcRelativeSeekPosition() {
+        return (long) (currentFrame) * 1000L;
     }
 
     private void seekTo(long msec) {
         binding.videoView.seekTo((int) msec);
     }
 
-    private Bitmap converBarIcon(int iconReource){
+    private Bitmap converBarIcon(int iconReource) {
         return BitmapFactory.decodeResource(getResources(), iconReource);
     }
 
@@ -259,22 +263,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 isStartPressedOnce = !isStartPressedOnce;
-                if(isStartPressedOnce){
+                if (isStartPressedOnce) {
                     binding.btnStartLeft.setImageResource(R.drawable.start_here_tap);
                     startThumbPos = currentFrame + 6;
                     adapter.addBar(currentFrame + 6, converBarIcon(R.drawable.lower_image_bar_right));
 
                     videoCutStartTime = currentFrame;
-                }else {
+                } else {
                     binding.btnStartLeft.setImageResource(R.drawable.start_here_normal);
                     adapter.removeBar(startThumbPos);
                     //adapter.addBar(currentFrame + 6, converBarIcon(R.drawable.lower_image_bar_right));
                 }
 
 
-
-
-                Log.e("FRAME_RATE_START", "is: "+currentFrame);
+                Log.e("FRAME_RATE_START", "is: " + currentFrame);
             }
         });
 
@@ -282,22 +284,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isEndPressedOnce = !isEndPressedOnce;
-                if(isEndPressedOnce){
+                if (isEndPressedOnce) {
                     binding.btnEndRight.setImageResource(R.drawable.end_here_tap);
                     endThumbPos = currentFrame + 7;
                     adapter.addBar(currentFrame + 7, converBarIcon(R.drawable.lower_image_bar_left));
 
                     videoCutEndTime = currentFrame;
 
-                }else {
+                } else {
                     binding.btnEndRight.setImageResource(R.drawable.end_here_normal);
                     adapter.removeBar(endThumbPos);
                     //adapter.addBar(currentFrame + 7, converBarIcon(R.drawable.lower_image_bar_left));
                 }
 
 
-
-                Log.e("FRAME_RATE_END", "is: "+currentFrame);
+                Log.e("FRAME_RATE_END", "is: " + currentFrame);
             }
         });
 
@@ -305,97 +306,144 @@ public class MainActivity extends AppCompatActivity {
         final InputStream ins = getResources().openRawResource(R.raw.bunny);
 
 
-
         binding.imgViewSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*VideoTrimmerUtil.trim(MainActivity.this,
-                        createFileFromInputStream(ins).getAbsolutePath(),
-                        getOutputFilePath(),
-                        videoCutStartTime * 1000L,
-                        videoCutEndTime * 1000L,
-                        new VideoTrimListener() {
-                            @Override
-                            public void onStartTrim() {
-                                buildDialog("Compressing...").show();
-                            }
 
-                            @Override
-                            public void onFinishTrim(String url) {
-                                mProgressDialog.dismiss();
-                                Toast.makeText(MainActivity.this, getString(R.string.save_success), Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onCancel() {
-
-                            }
-                        });*/
-
-                cutVideo();
+                if (binding.btnTrim.getTag().equals("TREAM_CLICKED")) {
+                    trimVideo();
+                } else {
+                    cutVideo();
+                }
             }
         });
 
 
     }
 
-    private void cutVideo(){
-        final InputStream ins = getResources().openRawResource(R.raw.bunny);
+    private void trimVideo() {
 
-
-
-        binding.imgViewSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                VideoTrimmerUtil.trim(MainActivity.this,
-                        createFileFromInputStream(ins).getAbsolutePath(),
-                        getOutputFilePath(),
-                        0,
-                        videoCutStartTime * 1000L,
-                        new VideoTrimListener() {
-                            @Override
-                            public void onStartTrim() {
-                                buildDialog("Compressing...").show();
-                            }
-
-                            @Override
-                            public void onFinishTrim(String url) {
-
-                                trimPortion = url;
-                                videoStripList.add(url);
-                                cutPortionMaintenance(trimPortion);
-                            }
-
-                            @Override
-                            public void onCancel() {
-
-                            }
-                        });
-
-
-
-
-            }
-        });
-
-
-
-
-
-    }
-
-
-    private void cutPortionMaintenance(final String url){
         final InputStream ins = getResources().openRawResource(R.raw.bunny);
         VideoTrimmerUtil.trim(MainActivity.this,
                 createFileFromInputStream(ins).getAbsolutePath(),
                 getOutputFilePath(),
-                videoCutEndTime,
+                videoCutStartTime * 1000L,
+                videoCutEndTime * 1000L,
+                new VideoTrimListener() {
+                    @Override
+                    public void onStartTrim() {
+                        buildDialog("Compressing...").show();
+                    }
+
+                    @Override
+                    public void onFinishTrim(String url) {
+                        mProgressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, getString(R.string.save_success), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
+    }
+
+    private void cutVideo() {
+        final InputStream ins = getResources().openRawResource(R.raw.bunny);
+        videoStripList.clear();
+
+        if (videoCutStartTime > 0 && (videoCutEndTime > 0 && videoCutEndTime < mDuration)) {
+            VideoTrimmerUtil.trim(MainActivity.this,
+                    createFileFromInputStream(ins).getAbsolutePath(),
+                    getOutputFilePath(),
+                    0,
+                    videoCutStartTime * 1000L,
+                    new VideoTrimListener() {
+                        @Override
+                        public void onStartTrim() {
+                            buildDialog("Compressing...").show();
+                        }
+
+                        @Override
+                        public void onFinishTrim(String url) {
+
+                            trimPortion = url;
+                            videoStripList.add(url);
+                            cutPortionMaintenance(trimPortion);
+                        }
+
+                        @Override
+                        public void onCancel() {
+
+                        }
+                    });
+
+        } else if (videoCutStartTime == 0 && videoCutEndTime > 0) {
+
+            VideoTrimmerUtil.trim(MainActivity.this,
+                    createFileFromInputStream(ins).getAbsolutePath(),
+                    getOutputFilePath(),
+                    0,
+                    videoCutEndTime * 1000L,
+                    new VideoTrimListener() {
+                        @Override
+                        public void onStartTrim() {
+                            buildDialog("Compressing...").show();
+                        }
+
+                        @Override
+                        public void onFinishTrim(String url) {
+                            mProgressDialog.dismiss();
+                            Toast.makeText(MainActivity.this, getString(R.string.save_success), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onCancel() {
+
+                        }
+                    });
+
+        }else if(videoCutStartTime > 0 && videoCutEndTime*1000L >= mDuration){
+            VideoTrimmerUtil.trim(MainActivity.this,
+                    createFileFromInputStream(ins).getAbsolutePath(),
+                    getOutputFilePath(),
+                    videoCutStartTime * 1000L,
+                    mDuration,
+                    new VideoTrimListener() {
+                        @Override
+                        public void onStartTrim() {
+                            buildDialog("Compressing...").show();
+                        }
+
+                        @Override
+                        public void onFinishTrim(String url) {
+                            mProgressDialog.dismiss();
+                            Toast.makeText(MainActivity.this, getString(R.string.save_success), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onCancel() {
+
+                        }
+                    });
+        }
+
+
+    }
+
+
+    private void cutPortionMaintenance(final String url) {
+        final InputStream ins = getResources().openRawResource(R.raw.bunny);
+
+
+        VideoTrimmerUtil.trim(MainActivity.this,
+                createFileFromInputStream(ins).getAbsolutePath(),
+                getOutputFilePath(),
+                videoCutEndTime * 1000,
                 mDuration,
                 new VideoTrimListener() {
                     @Override
                     public void onStartTrim() {
-                        //buildDialog("Compressing...").show();
                     }
 
                     @Override
@@ -413,12 +461,14 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+
+
     }
 
 
-    private void merge(){
+    private void merge() {
         final InputStream ins = getResources().openRawResource(R.raw.bunny);
-        VideoTrimmerUtil.cut(MainActivity.this, createFileFromInputStream(ins).getAbsolutePath(), videoStripList, new VideoTrimListener() {
+        VideoTrimmerUtil.cut(MainActivity.this, getOutputFilePath(), videoStripList, new VideoTrimListener() {
             @Override
             public void onStartTrim() {
 
@@ -436,9 +486,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
 
 
     private String getDurationString(int seconds) {
@@ -466,21 +513,21 @@ public class MainActivity extends AppCompatActivity {
 
     private File createFileFromInputStream(InputStream inputStream) {
 
-        try{
+        try {
             File f = new File(StorageUtil.getCacheDir() + File.separator + COMPRESSED_VIDEO_FILE_NAME);
             OutputStream outputStream = new FileOutputStream(f);
             byte buffer[] = new byte[1024];
             int length = 0;
 
-            while((length=inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer,0,length);
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
             }
 
             outputStream.close();
             inputStream.close();
 
             return f;
-        }catch (IOException e) {
+        } catch (IOException e) {
             //Logging exception
         }
 
@@ -488,8 +535,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    private String getOutputFilePath(){
+    private String getOutputFilePath() {
         File folder = new File(Environment.getExternalStorageDirectory() +
                 File.separator + "advance_vid_cutter");
         boolean success = true;
@@ -553,7 +599,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 showTimer(mediaPlayer);
-                binding.txtEndTime.setText(getDurationString(mediaPlayer.getDuration()/1000));
+                binding.txtEndTime.setText(getDurationString(mediaPlayer.getDuration() / 1000));
                 initSlicer();
 
             }
@@ -562,7 +608,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void showTimer(final MediaPlayer mp){
+    private void showTimer(final MediaPlayer mp) {
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -570,10 +616,10 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(timer != null)
+                        if (timer != null)
                             try {
                                 binding.txtRunningTime.setText(getDurationString(mp.getCurrentPosition() / 1000));
-                            } catch (Exception e){
+                            } catch (Exception e) {
                                 timer.cancel();
                                 timer = null;
                             }
@@ -584,8 +630,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    private void initSlicer(){
+    private void initSlicer() {
 
         mDuration = binding.videoView.getDuration();
 
@@ -651,5 +696,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         binding.videoView.stopPlayback();
         super.onDestroy();
+    }
+
+
+    public boolean isTreamStateOn() {
+        return isTreamStateOn;
     }
 }
