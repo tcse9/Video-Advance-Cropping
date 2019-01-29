@@ -409,6 +409,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPrepared(final MediaPlayer mediaPlayer) {
 
                 mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+                mediaPlayer.setLooping(true);
 
                 uiManager.setLoadingProgressBarVisibility(View.GONE);
 
