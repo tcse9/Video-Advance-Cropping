@@ -24,6 +24,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import nl.bravobit.ffmpeg.FFmpeg;
+
 public class ApplicationSingleton extends Application {
 
     private static ApplicationSingleton sInstance;
@@ -51,6 +53,13 @@ public class ApplicationSingleton extends Application {
         //initializing the application preference file with MODE_PRIVATE
         mPref = this.getApplicationContext().getSharedPreferences(BuildConfig.APPLICATION_ID + "_pref", MODE_PRIVATE);
         BaseUtils.init(this);
+        initFFmpegBinary(this);
+    }
+
+    private void initFFmpegBinary(Context context) {
+        if (!FFmpeg.getInstance(context).isSupported()) {
+            Log.e("ZApplication","Android cup arch not supported!");
+        }
     }
 
     public SharedPreferences getSharedPreference() {

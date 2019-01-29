@@ -1,13 +1,18 @@
 package com.taufiq.videoadvancecropping;
 
 
+import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,17 +20,26 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Toast;
 
 import com.taufiq.videoadvancecropping.adapters.VideoTrimmerAdapter;
 import com.taufiq.videoadvancecropping.binders.UiManager;
 import com.taufiq.videoadvancecropping.databinding.ActivityMainBinding;
 import com.taufiq.videoadvancecropping.listeners.IVideoViewActionListener;
 import com.taufiq.videoadvancecropping.listeners.SingleCallback;
+import com.taufiq.videoadvancecropping.listeners.VideoTrimListener;
 import com.taufiq.videoadvancecropping.utils.BackgroundExecutor;
 import com.taufiq.videoadvancecropping.utils.DeviceUtil;
+import com.taufiq.videoadvancecropping.utils.StorageUtil;
 import com.taufiq.videoadvancecropping.utils.UiThreadExecutor;
 import com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil;
 import com.taufiq.videoadvancecropping.viewhelpers.PaddingItemDecoration;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.MAX_SHOOT_DURATION;
 import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.THUMB_WIDTH;
@@ -45,6 +59,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean isSeeking;
     private int lastScrollX;
     private LinearLayoutManager linearLayoutManager;
+    private static final int REQ_CODE_PERMISSIONS = 110;
+    private ProgressDialog mProgressDialog;
+    private static final String COMPRESSED_VIDEO_FILE_NAME = "compress.mp4";
+
+
     private int currentFrame = 0;
     private boolean isStartPressedOnce = false;
     private boolean isEndPressedOnce = false;
@@ -61,13 +80,51 @@ public class MainActivity extends AppCompatActivity {
         uiManager = new UiManager();
         binding.setUimanager(uiManager);
 
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                REQ_CODE_PERMISSIONS);
 
-        init();
+
+        //init();
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQ_CODE_PERMISSIONS: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    init();
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+
+
+
+
 
     private void init() {
+
+
+
 
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         binding.recyclerView.setLayoutManager(linearLayoutManager);
@@ -76,6 +133,16 @@ public class MainActivity extends AppCompatActivity {
         binding.recyclerView.addOnScrollListener(mOnScrollListener);
 
         setPrepare(this, uiManager, binding, position);
+
+        binding.imgViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+
+
 
     }
 
@@ -155,6 +222,8 @@ public class MainActivity extends AppCompatActivity {
                     binding.btnStartLeft.setImageResource(R.drawable.start_here_tap);
                     startThumbPos = currentFrame + 6;
                     adapter.addBar(currentFrame + 6, converBarIcon(R.drawable.lower_image_bar_right));
+
+                    videoCutStartTime = currentFrame;
                 }else {
                     binding.btnStartLeft.setImageResource(R.drawable.start_here_normal);
                     adapter.removeBar(startThumbPos);
@@ -176,6 +245,9 @@ public class MainActivity extends AppCompatActivity {
                     binding.btnEndRight.setImageResource(R.drawable.end_here_tap);
                     endThumbPos = currentFrame + 7;
                     adapter.addBar(currentFrame + 7, converBarIcon(R.drawable.lower_image_bar_left));
+
+                    videoCutEndTime = currentFrame;
+
                 }else {
                     binding.btnEndRight.setImageResource(R.drawable.end_here_normal);
                     adapter.removeBar(endThumbPos);
@@ -187,6 +259,83 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("FRAME_RATE_END", "is: "+currentFrame);
             }
         });
+
+
+        final InputStream ins = getResources().openRawResource(R.raw.bunny);
+
+
+
+        binding.imgViewSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                VideoTrimmerUtil.trim(MainActivity.this,
+                        createFileFromInputStream(ins).getAbsolutePath(),
+                        getOutputFilePath(),
+                        videoCutStartTime * 1000L,
+                        videoCutEndTime * 1000L,
+                        new VideoTrimListener() {
+                            @Override
+                            public void onStartTrim() {
+                                buildDialog("Compressing...").show();
+                            }
+
+                            @Override
+                            public void onFinishTrim(String url) {
+                                mProgressDialog.dismiss();
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
+                        });
+            }
+        });
+
+
+
+
+    }
+
+    private File createFileFromInputStream(InputStream inputStream) {
+
+        try{
+            File f = new File(StorageUtil.getCacheDir() + File.separator + COMPRESSED_VIDEO_FILE_NAME);
+            OutputStream outputStream = new FileOutputStream(f);
+            byte buffer[] = new byte[1024];
+            int length = 0;
+
+            while((length=inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer,0,length);
+            }
+
+            outputStream.close();
+            inputStream.close();
+
+            return f;
+        }catch (IOException e) {
+            //Logging exception
+        }
+
+        return null;
+    }
+
+
+
+    private String getOutputFilePath(){
+        File folder = new File(Environment.getExternalStorageDirectory() +
+                File.separator + "advance_vid_cutter");
+        boolean success = true;
+        if (!folder.exists()) {
+            success = folder.mkdirs();
+        }
+        if (success) {
+            // Do something on success
+        } else {
+            // Do something else on failure
+        }
+
+        return folder.getAbsolutePath();
     }
 
 
@@ -283,4 +432,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
+
+    private ProgressDialog buildDialog(String msg) {
+        if (mProgressDialog == null) {
+            mProgressDialog = ProgressDialog.show(this, "", msg);
+        }
+        mProgressDialog.setMessage(msg);
+        return mProgressDialog;
+    }
 }
