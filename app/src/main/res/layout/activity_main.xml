@@ -18,7 +18,7 @@
         android:background="@color/colorBlack"
         android:orientation="vertical"
         android:gravity="center"
-        android:weightSum="3.85">
+        android:weightSum="4">
 
 
         <RelativeLayout
@@ -279,6 +279,38 @@
 
 
         </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".15">
+
+            <TextView
+                android:id="@+id/txtStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:layout_alignParentLeft="true"
+                android:text="00:00:01"/>
+
+            <TextView
+                android:id="@+id/txtRunningTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:layout_centerInParent="true"
+                android:text="00:01"/>
+
+            <TextView
+                android:id="@+id/txtEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:layout_alignParentRight="true"
+                android:text="00:01"/>
+
+
+        </RelativeLayout>
 
 
     </LinearLayout>

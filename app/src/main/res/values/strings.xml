@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Video Advance Cropping</string>
     <string name="cut">Cut</string>
+    <string name="save_success">Successfully compressed and saved to storage</string>
 </resources>

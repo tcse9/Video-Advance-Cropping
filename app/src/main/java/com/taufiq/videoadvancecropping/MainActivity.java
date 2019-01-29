@@ -12,6 +12,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -29,23 +30,19 @@ import com.taufiq.videoadvancecropping.databinding.ActivityMainBinding;
 import com.taufiq.videoadvancecropping.listeners.IVideoViewActionListener;
 import com.taufiq.videoadvancecropping.listeners.SingleCallback;
 import com.taufiq.videoadvancecropping.listeners.VideoTrimListener;
-import com.taufiq.videoadvancecropping.utils.BackgroundExecutor;
-import com.taufiq.videoadvancecropping.utils.DeviceUtil;
 import com.taufiq.videoadvancecropping.utils.StorageUtil;
 import com.taufiq.videoadvancecropping.utils.UiThreadExecutor;
 import com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil;
-import com.taufiq.videoadvancecropping.viewhelpers.PaddingItemDecoration;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.util.Timer;
+import java.util.TimerTask;
 import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.MAX_SHOOT_DURATION;
 import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.THUMB_WIDTH;
-import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.VIDEO_FRAMES_WIDTH;
-import static com.taufiq.videoadvancecropping.utils.VideoTrimmerUtil.VIDEO_MAX_TIME;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -106,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
 
                     // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                    // functionality that depends on thissetpre permission.
                     Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
                 }
                 return;
@@ -318,6 +315,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onFinishTrim(String url) {
                                 mProgressDialog.dismiss();
+                                Toast.makeText(MainActivity.this, getString(R.string.save_success), Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -332,6 +330,29 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    private String getDurationString(int seconds) {
+
+        int hours = seconds / 3600;
+        int minutes = (seconds % 3600) / 60;
+        seconds = seconds % 60;
+
+        return twoDigitString(hours) + " : " + twoDigitString(minutes) + " : " + twoDigitString(seconds);
+    }
+
+    private String twoDigitString(int number) {
+
+        if (number == 0) {
+            return "00";
+        }
+
+        if (number / 10 == 0) {
+            return "0" + number;
+        }
+
+        return String.valueOf(number);
+    }
+
 
     private File createFileFromInputStream(InputStream inputStream) {
 
@@ -420,11 +441,29 @@ public class MainActivity extends AppCompatActivity {
                     binding.videoView.pause();
                 }
 
+
+                showTimer(mediaPlayer);
+                binding.txtEndTime.setText(getDurationString(mediaPlayer.getDuration()/1000));
                 initSlicer();
 
             }
         });
 
+    }
+
+
+    private void showTimer(final MediaPlayer mp){
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+               runOnUiThread(new Runnable() {
+                   @Override
+                   public void run() {
+                       binding.txtRunningTime.setText(getDurationString(mp.getCurrentPosition()/1000));
+                   }
+               });
+            }
+        }, 0, 1000);
     }
 
 
