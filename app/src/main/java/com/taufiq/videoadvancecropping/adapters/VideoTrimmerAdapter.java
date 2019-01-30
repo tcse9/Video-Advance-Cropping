@@ -65,13 +65,11 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     }
 
     private final class TrimmerViewHolder extends RecyclerView.ViewHolder {
-        ImageView thumbImageView, imageBarRight, imageBarLeft;
+        ImageView thumbImageView;
 
         TrimmerViewHolder(View itemView) {
             super(itemView);
             thumbImageView = itemView.findViewById(R.id.thumb);
-            imageBarRight = itemView.findViewById(R.id.imageBarRight);
-            imageBarLeft = itemView.findViewById(R.id.imageBarLeft);
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) thumbImageView.getLayoutParams();
             layoutParams.width = VideoTrimmerUtil.VIDEO_FRAMES_WIDTH / VideoTrimmerUtil.MAX_COUNT_RANGE;
             thumbImageView.setLayoutParams(layoutParams);

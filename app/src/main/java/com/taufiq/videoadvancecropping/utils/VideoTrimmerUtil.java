@@ -38,7 +38,6 @@ public class VideoTrimmerUtil {
     private static final int THUMB_HEIGHT = UnitConverter.dpToPx(50);
 
 
-
     public static void trim(Context context, String inputFile, String outputFile, long startMs, long endMs, final VideoTrimListener callback) {
         final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         final String outputName = "trimmedVideo_" + timeStamp + ".mp4";
@@ -46,36 +45,20 @@ public class VideoTrimmerUtil {
 
         String start = convertSecondsToTime(startMs / 1000);
         String duration = convertSecondsToTime((endMs - startMs) / 1000);
-        //String start = String.valueOf(startMs);
-        //String duration = String.valueOf(endMs - startMs);
 
-        /** 裁剪视频ffmpeg指令说明：
-         * ffmpeg -ss START -t DURATION -i INPUT -codec copy -avoid_negative_ts 1 OUTPUT
-         -ss 开始时间，如： 00:00:20，表示从20秒开始；
-         -t 时长，如： 00:00:10，表示截取10秒长的视频；
-         -i 输入，后面是空格，紧跟着就是输入视频文件；
-         -codec copy -avoid_negative_ts 1 表示所要使用的视频和音频的编码格式，这里指定为copy表示原样拷贝；
-         INPUT，输入视频文件；
-         OUTPUT，输出视频文件
-         */
-        //TODO: Here are some instructions
-        //https://trac.ffmpeg.org/wiki/Seeking
-        //https://superuser.com/questions/138331/using-ffmpeg-to-cut-up-video
-
-        //1. String cmd = "-ss " + start + " -t " + duration + " -accurate_seek" + " -i " + inputFile + " -codec copy -avoid_negative_ts 1 " + outputFile;
-        //2. String cmd = "-ss " + start + " -i " + inputFile + " -ss " + start + " -t " + duration + " -vcodec copy " + outputFile;
-        //3. {"ffmpeg", "-ss", "" + startTime, "-y", "-i", inputFile, "-t", "" + induration, "-vcodec", "mpeg4", "-b:v", "2097152", "-b:a", "48000", "-ac", "2", "-ar", "22050", outputFile}
-        String cmd = "-ss " + start + " -y " + "-i " + inputFile + " -t " + duration + " -vcodec " + "mpeg4 " + "-b:v " + "2097152 " + "-b:a " + "48000 " + "-ac " + "2 " + "-ar " + "22050 "+ outputFile;
+        String cmd = "-ss " + start + " -y " + "-i " + inputFile + " -t " + duration + " -vcodec " + "mpeg4 " + "-b:v " + "2097152 " + "-b:a " + "48000 " + "-ac " + "2 " + "-ar " + "22050 " + outputFile;
         String[] command = cmd.split(" ");
         try {
             final String tempOutFile = outputFile;
             FFmpeg.getInstance(context).execute(command, new ExecuteBinaryResponseHandler() {
 
-                @Override public void onSuccess(String s) {
+                @Override
+                public void onSuccess(String s) {
                     callback.onFinishTrim(tempOutFile);
                 }
 
-                @Override public void onStart() {
+                @Override
+                public void onStart() {
                     callback.onStartTrim();
                 }
             });
@@ -111,7 +94,7 @@ public class VideoTrimmerUtil {
         final String outputName = "trimmedVideo_" + timeStamp + ".mp4";
         outputFile = outputFile + "/" + outputName;
 
-        String[] command = new String[] {
+        String[] command = new String[]{
                 "-f",
                 "concat",
                 "-safe",
@@ -124,16 +107,17 @@ public class VideoTrimmerUtil {
         };
 
 
-
         try {
             final String tempOutFile = outputFile;
             FFmpeg.getInstance(context).execute(command, new ExecuteBinaryResponseHandler() {
 
-                @Override public void onSuccess(String s) {
+                @Override
+                public void onSuccess(String s) {
                     callback.onFinishTrim(tempOutFile);
                 }
 
-                @Override public void onStart() {
+                @Override
+                public void onStart() {
                     callback.onStartTrim();
                 }
 
@@ -152,7 +136,6 @@ public class VideoTrimmerUtil {
         }
 
     }
-
 
 
     public static String getVideoFilePath(String url) {
@@ -202,7 +185,8 @@ public class VideoTrimmerUtil {
     public static void shootVideoThumbInBackground(final Context context, final Uri videoUri, final int totalThumbsCount, final long startPosition,
                                                    final long endPosition, final SingleCallback<Bitmap, Integer> callback) {
         BackgroundExecutor.execute(new BackgroundExecutor.Task("", 0L, "") {
-            @Override public void execute() {
+            @Override
+            public void execute() {
                 try {
 
                     int w = THUMB_WIDTH, h = THUMB_HEIGHT;
@@ -210,7 +194,7 @@ public class VideoTrimmerUtil {
                     Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
                     Bitmap bmp = Bitmap.createBitmap(w, h, conf);
 
-                    for(int i=0;i<6;i++){
+                    for (int i = 0; i < 6; i++) {
                         long interval = (endPosition - startPosition) / (totalThumbsCount - 1);
                         callback.onSingleCallback(bmp, (int) interval);
                     }
@@ -223,7 +207,7 @@ public class VideoTrimmerUtil {
                     for (long i = 0; i < totalThumbsCount; ++i) {
                         long frameTime = startPosition + interval * i;
                         Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(frameTime * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-                        if(bitmap == null) continue;
+                        if (bitmap == null) continue;
                         try {
                             bitmap = Bitmap.createScaledBitmap(bitmap, THUMB_WIDTH, THUMB_HEIGHT, false);
                         } catch (final Throwable t) {
@@ -233,7 +217,7 @@ public class VideoTrimmerUtil {
                     }
 
 
-                    for(int i=0;i<6;i++){
+                    for (int i = 0; i < 6; i++) {
                         long interval2 = (endPosition - startPosition) / (totalThumbsCount - 1);
                         callback.onSingleCallback(bmp, (int) interval2);
                     }

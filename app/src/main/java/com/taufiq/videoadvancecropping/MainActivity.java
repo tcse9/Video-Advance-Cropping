@@ -8,11 +8,9 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +19,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.taufiq.videoadvancecropping.adapters.VideoTrimmerAdapter;
@@ -616,13 +613,13 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (timer != null)
-                            try {
-                                binding.txtRunningTime.setText(getDurationString(mp.getCurrentPosition() / 1000));
-                            } catch (Exception e) {
-                                timer.cancel();
-                                timer = null;
-                            }
+                        try {
+                            if (timer != null)
+                                if (binding.txtRunningTime != null && mp != null)
+                                    binding.txtRunningTime.setText(getDurationString(mp.getCurrentPosition() / 1000));
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
