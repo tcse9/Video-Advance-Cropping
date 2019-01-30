@@ -284,11 +284,16 @@ public class MainActivity extends AppCompatActivity {
                     adapter.addBar(currentFrame + 6, converBarIcon(R.drawable.lower_image_bar_right));
 
                     videoCutStartTime = currentFrame;
+
+                    binding.txtStartTime.setText(getDurationString((int)videoCutStartTime));
                 } else {
                     binding.btnStartLeft.setImageResource(R.drawable.start_here_normal);
                     adapter.removeBar(startThumbPos);
+                    binding.txtStartTime.setText("00:00:01");
                     //adapter.addBar(currentFrame + 6, converBarIcon(R.drawable.lower_image_bar_right));
                 }
+
+
 
 
                 Log.e("FRAME_RATE_START", "is: " + currentFrame);
@@ -306,11 +311,15 @@ public class MainActivity extends AppCompatActivity {
 
                     videoCutEndTime = currentFrame;
 
+                    binding.txtEndTime.setText(getDurationString((int)videoCutEndTime));
+
                 } else {
                     binding.btnEndRight.setImageResource(R.drawable.end_here_normal);
                     adapter.removeBar(endThumbPos);
+                    binding.txtEndTime.setText(getDurationString(mDuration / 1000));
                     //adapter.addBar(currentFrame + 7, converBarIcon(R.drawable.lower_image_bar_left));
                 }
+
 
 
                 Log.e("FRAME_RATE_END", "is: " + currentFrame);
