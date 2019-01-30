@@ -18,7 +18,7 @@
         android:background="@color/colorBlack"
         android:orientation="vertical"
         android:gravity="center"
-        android:weightSum="3.85">
+        android:weightSum="4">
 
 
         <RelativeLayout
@@ -29,6 +29,7 @@
 
 
             <ImageButton
+                android:id="@+id/imgViewBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -46,7 +47,7 @@
 
 
                 <Button
-                    android:id="@+id/btnCut"
+                    android:id="@+id/btnTrim"
                     android:layout_width="0dp"
                     android:layout_height="25dp"
                     android:layout_weight="1"
@@ -56,7 +57,7 @@
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/btnTrim"
+                    android:id="@+id/btnCut"
                     android:layout_width="0dp"
                     android:layout_height="25dp"
                     android:layout_weight="1"
@@ -70,6 +71,7 @@
 
 
             <ImageButton
+                android:id="@+id/imgViewSave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -196,6 +198,7 @@
 
 
                 <ImageView
+                    android:id="@+id/btnStartLeft"
                     android:layout_width="65dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_20dp"
@@ -203,6 +206,7 @@
                     android:src="@drawable/start_here_normal" />
 
                 <ImageView
+                    android:id="@+id/btnEndRight"
                     android:layout_width="65dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_20dp"
@@ -217,24 +221,96 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:scrollbars="horizontal" />
+
+                    <!--<RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/margin_20dp">
+
+                        <ImageView
+                            android:id="@+id/imageBarRight"
+                            android:layout_width="20dp"
+                            android:layout_height="60dp"
+                            android:paddingRight="10dp"
+                            android:scaleType="fitXY"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/lower_image_bar_right" />
+
+                        <ImageView
+                            android:id="@+id/imageBarLeft"
+                            android:layout_width="20dp"
+                            android:layout_height="60dp"
+                            android:paddingLeft="10dp"
+                            android:scaleType="fitXY"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/lower_image_bar_left" />
+
+                    </RelativeLayout>-->
+
+
+
+
+                </FrameLayout>
+
+
+
                 <ImageView
+                    android:id="@+id/verticalBar"
                     android:layout_width="wrap_content"
                     android:layout_height="120dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="fitXY"
                     android:src="@drawable/vertical_bar" />
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="80dp"
-                    android:scrollbars="horizontal" />
 
 
             </RelativeLayout>
 
 
         </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".15">
+
+            <TextView
+                android:id="@+id/txtStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:layout_alignParentLeft="true"
+                android:text="00:00:01"/>
+
+            <TextView
+                android:id="@+id/txtRunningTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:layout_centerInParent="true"
+                android:text="00:01"/>
+
+            <TextView
+                android:id="@+id/txtEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:layout_alignParentRight="true"
+                android:text="00:01"/>
+
+
+        </RelativeLayout>
 
 
     </LinearLayout>

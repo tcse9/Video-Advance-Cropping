@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.taufiq.videoadvancecropping"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -43,4 +43,5 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     testImplementation "org.robolectric:robolectric:3.5.1"
     testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.17'
+    implementation 'nl.bravobit:android-ffmpeg:1.1.5'
 }

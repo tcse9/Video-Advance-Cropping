@@ -13,10 +13,6 @@ public class ObservableVideoView extends VideoView {
     private IVideoViewActionListener mVideoViewListener;
     private boolean mIsOnPauseMode = false;
 
-    private int mVideoWidth;
-    private int mVideoHeight;
-
-
     /**
      * Sets the listener
      * @param listener
@@ -86,30 +82,4 @@ public class ObservableVideoView extends VideoView {
     }
 
 
-    public void setVideoSize(int width, int height) {
-        mVideoWidth = width;
-        mVideoHeight = height;
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // Log.i("@@@", "onMeasure");
-        int width = getDefaultSize(mVideoWidth, widthMeasureSpec);
-        int height = getDefaultSize(mVideoHeight, heightMeasureSpec);
-        if (mVideoWidth > 0 && mVideoHeight > 0) {
-            if (mVideoWidth * height > width * mVideoHeight) {
-                // Log.i("@@@", "image too tall, correcting");
-                height = width * mVideoHeight / mVideoWidth;
-            } else if (mVideoWidth * height < width * mVideoHeight) {
-                // Log.i("@@@", "image too wide, correcting");
-                width = height * mVideoWidth / mVideoHeight;
-            } else {
-                // Log.i("@@@", "aspect ratio is correct: " +
-                // width+"/"+height+"="+
-                // mVideoWidth+"/"+mVideoHeight);
-            }
-        }
-        // Log.i("@@@", "setting size: " + width + 'x' + height);
-        setMeasuredDimension(width, height);
-    }
 }
