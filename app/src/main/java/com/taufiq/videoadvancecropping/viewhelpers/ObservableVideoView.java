@@ -13,10 +13,6 @@ public class ObservableVideoView extends VideoView {
     private IVideoViewActionListener mVideoViewListener;
     private boolean mIsOnPauseMode = false;
 
-    private int mVideoWidth;
-    private int mVideoHeight;
-
-
     /**
      * Sets the listener
      * @param listener

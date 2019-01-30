@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -92,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
                 REQ_CODE_PERMISSIONS);
 
 
-        //init();
-
     }
 
     @Override
@@ -102,28 +99,26 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQ_CODE_PERMISSIONS: {
 
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
                     init();
                 } else {
 
                     // permission denied, boo! Disable the
-                    // functionality that depends on thissetpre permission.
-                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.read_write_premission), Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
 
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 
 
+    /**
+     * Initialization
+     */
     private void init() {
 
 
@@ -148,6 +143,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Top bar button action handling
+     */
     private void topLayoutButtonColorManagement() {
 
         binding.btnTrim.setTextColor(ContextCompat.getColor(this, R.color.colorWhite));
@@ -188,6 +186,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Recyclerview scroll listener
+     */
     private final RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -216,6 +217,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Calculates the original distance from scroll listener
+     * @return
+     */
     private int calcScrollXDistance() {
         LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recyclerView.getLayoutManager();
         int position = layoutManager.findFirstVisibleItemPosition();
@@ -225,14 +230,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Calculates relative seek position
+     * @return
+     */
     private long calcRelativeSeekPosition() {
         return (long) (currentFrame) * 1000L;
     }
 
+    /**
+     * VideoView seek to functionality
+     * @param msec
+     */
     private void seekTo(long msec) {
         binding.videoView.seekTo((int) msec);
     }
 
+    /**
+     * Converts image from drawble to B\itmap
+     * @param iconReource
+     * @return
+     */
     private Bitmap converBarIcon(int iconReource) {
         return BitmapFactory.decodeResource(getResources(), iconReource);
     }
@@ -307,6 +325,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                if(videoCutStartTime == videoCutEndTime){
+                    Toast.makeText(MainActivity.this, "Start time and end time cannot be same", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(videoCutEndTime <= videoCutStartTime){
+                    Toast.makeText(MainActivity.this, "End time cannot be less than start time", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if (binding.btnTrim.getTag().equals("TREAM_CLICKED")) {
                     trimVideo();
                 } else {
@@ -318,6 +346,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Trim video functionality
+     */
     private void trimVideo() {
 
         final InputStream ins = getResources().openRawResource(R.raw.bunny);
@@ -345,9 +376,13 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Cut video functionality
+     */
     private void cutVideo() {
         final InputStream ins = getResources().openRawResource(R.raw.bunny);
         videoStripList.clear();
+
 
         if (videoCutStartTime > 0 && videoCutEndTime < mDuration/1000) {
             VideoTrimmerUtil.trim(MainActivity.this,
@@ -463,6 +498,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Merging the cut videos
+     */
     private void merge() {
         final InputStream ins = getResources().openRawResource(R.raw.bunny);
         VideoTrimmerUtil.cut(MainActivity.this, getOutputFilePath(), videoStripList, new VideoTrimListener() {
@@ -627,6 +665,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Thumbnail slicing
+     */
     private void initSlicer() {
 
         mDuration = binding.videoView.getDuration();

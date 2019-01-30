@@ -56,6 +56,10 @@ public class ApplicationSingleton extends Application {
         initFFmpegBinary(this);
     }
 
+    /**
+     * Init and check if the device supports FFmpeg or not
+     * @param context
+     */
     private void initFFmpegBinary(Context context) {
         if (!FFmpeg.getInstance(context).isSupported()) {
             Log.e("ZApplication","Android cup arch not supported!");

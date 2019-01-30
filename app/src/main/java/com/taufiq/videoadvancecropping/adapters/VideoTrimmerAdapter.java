@@ -2,10 +2,8 @@ package com.taufiq.videoadvancecropping.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +20,6 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     private List<Bitmap> mBitmaps = new ArrayList<>();
     private LayoutInflater mInflater;
     private Context context;
-    private boolean isRightBarClicked = false;
-    private boolean isLeftBarClicked = false;
-    private int positionStart = 0;
-    private int positionEnd = 0;
 
     public VideoTrimmerAdapter(Context context) {
         this.context = context;
