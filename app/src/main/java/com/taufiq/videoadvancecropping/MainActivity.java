@@ -352,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
         final InputStream ins = getResources().openRawResource(R.raw.bunny);
         videoStripList.clear();
 
-        if (videoCutStartTime > 0 && (videoCutEndTime > 0 && videoCutEndTime < mDuration)) {
+        if (videoCutStartTime > 0 && videoCutEndTime < mDuration/1000) {
             VideoTrimmerUtil.trim(MainActivity.this,
                     createFileFromInputStream(ins).getAbsolutePath(),
                     getOutputFilePath(),
@@ -383,8 +383,8 @@ public class MainActivity extends AppCompatActivity {
             VideoTrimmerUtil.trim(MainActivity.this,
                     createFileFromInputStream(ins).getAbsolutePath(),
                     getOutputFilePath(),
-                    0,
-                    videoCutEndTime * 1000L,
+                    videoCutEndTime*1000L,
+                    mDuration,
                     new VideoTrimListener() {
                         @Override
                         public void onStartTrim() {
@@ -403,12 +403,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-        }else if(videoCutStartTime > 0 && videoCutEndTime*1000L >= mDuration){
+        }else if(videoCutStartTime > 0 && videoCutEndTime >= mDuration/1000){
             VideoTrimmerUtil.trim(MainActivity.this,
                     createFileFromInputStream(ins).getAbsolutePath(),
                     getOutputFilePath(),
+                    0,
                     videoCutStartTime * 1000L,
-                    mDuration,
                     new VideoTrimListener() {
                         @Override
                         public void onStartTrim() {
