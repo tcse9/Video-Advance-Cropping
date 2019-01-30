@@ -8,7 +8,7 @@
 - This app only uses FFmpeg to trim and merge videos, other than this no library is used and everything else is built from scratch.
 - This app takes help from some open codes (specially utility classes).
 - Playing speed of video between VideoView and horizontally scrolling recyclerview is perfectly synchronized.
-- From Github and other open source platform we couldn't find any libray or source this much close to our implemented features. 
+- From Github and other open source platform we couldn't find any library or source this much close to our implemented features. 
 - App UI is maintained as close as possible to the provided mockups.
 
 ## Known issues
